@@ -1,12 +1,13 @@
 'use client';
 import React, {useState} from "react";
 import ShipComponent from "@/components/shipComponent";
-// @ts-ignore
+
 import bubbleSort from "@/lib/sorts/simple-sorts/bubbleSort";
-// @ts-ignore
 import countingSort from "@/lib/sorts/simple-sorts/countingSort";
 import insertSort from "@/lib/sorts/simple-sorts/insertSort";
 import quickSort from "@/lib/sorts/quickSort";
+import smoothSort from "@/lib/sorts/smoothSort";
+import mergeSort from "@/lib/sorts/mergeSort";
 
 
 export default function Home() {
@@ -18,7 +19,7 @@ export default function Home() {
 
     const [shipToAddRandom, setShipToAddRandom] = useState<number>(0);
 
-    const typeOfSort: string[] = ['bubble', 'counting', 'insert', 'quick'];
+    const typeOfSort: string[] = ['bubble', 'counting', 'insert', 'quick', 'heap', 'merge'];
 
     const addShip = () => {
         if (shipToAdd <= 0) {
@@ -42,6 +43,12 @@ export default function Home() {
                 break;
             case 'quick':
                 await sortContext(quickSort)
+                break;
+            case 'heap':
+                await sortContext(smoothSort)
+                break;
+            case 'merge':
+                await sortContext(mergeSort)
                 break;
             default:
                 alert('Невідомий метод сортування');
@@ -86,6 +93,7 @@ export default function Home() {
                 <input
                     type="number"
                     value={shipToAdd}
+                    min={0}
                     onChange={(e) => setShipToAdd(parseInt(e.target.value))}
                     className="border border-gray-400 rounded px-2 py-1 ml-2"/>
             </div>
@@ -113,6 +121,7 @@ export default function Home() {
                     <input
                         type="number"
                         value={shipToAddRandom}
+                        min={0}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             setShipToAddRandom(parseInt(e.target.value))
                         }}

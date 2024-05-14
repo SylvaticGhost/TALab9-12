@@ -1,38 +1,75 @@
-﻿export default function smoothSort(arr: number[]): number[] { 
-    const sift = (arr: number[], l: number, r: number) => {
-        let i = l;
-        let j = 2 * i + 1;
-        let x = arr[i];
+﻿function leonardoNumber(n: number): number {
+    if (n < 2)
+        return 1;
+    
+    return leonardoNumber(n - 1) + leonardoNumber(n - 2) + 1;
+}
+
+function heapify(arr: number[], start: number,  end: number) {
+    let i = start;
+    let j = 0;
+    let k = 0;
+    
+    while (k < end - start + 1) {
+        if (k & 0xAAAAAAAA) {
+            j += i;
+            i = i >> 1;
+        }
+        else {
+            i += j;
+            j = j >> 1;
+        }
         
-        while (j <= r) {
-            if (j < r && arr[j] < arr[j + 1]) {
-                j++;
-                
-            }
-            if (x >= arr[j]) {
+        k++;
+    }
+    
+    while (i > 0) {
+        j = j >> 1;
+        k = i + j;
+        
+        while(k < end) {
+            if (arr[k] > arr[k - i])
                 break;
-            }
-            arr[i] = arr[j];
-            i = j;
-            j = 2 * i + 1;
+            [arr[k], arr[k - i]] = [arr[k - i], arr[k]];
+            k += i;
         }
-        arr[i] = x;
+        i = j;
+    }
+}
+
+export default function smoothSort(arr: number[]): number[] { 
+    const n = arr.length;
+    
+    let p = n - 1;
+    let q = p;
+    let r = 0;
+    
+    while (p > 0) {
+        if ((r & 0x03) == 0)
+            heapify(arr, r, q);
+        
+        if (leonardoNumber(r) == p)
+            r += 1;
+        else {
+            r -= 1;
+            q = q -leonardoNumber(r);   
+            heapify(arr, r, q);
+            q = r - 1;
+            r++;
+        }
+        
+        [arr[0], arr[q]] = [arr[q], arr[0]];
+        p--;
     }
     
-    const heapify = (arr: number[]) => {
-        for (let i = Math.floor(arr.length / 2) - 1; i >= 0; i--) {
-            sift(arr, i, arr.length - 1);
-        }
-    }
     
-    heapify(arr);
-    for (let i = arr.length - 1; i > 0; i--) {
-        const temp = arr[0];
-        arr[0] = arr[i];
-        arr[i] = temp;
-        sift(arr, 0, i - 1);
+    for (let i = 0; i < n - 1; i++) {
+        let j = i + 1;
+        while (j > 0 && arr[j] < arr[j - 1]) {
+            [arr[j], arr[j - 1]] = [arr[j - 1], arr[j]];
+            j--;
+        }
     }
     
     return arr;
-    
 }

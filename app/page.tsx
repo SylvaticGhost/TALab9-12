@@ -18,8 +18,11 @@ export default function Home() {
     const [time, setTime] = useState<string>('-');
 
     const [shipToAddRandom, setShipToAddRandom] = useState<number>(0);
+    const [typeOfGeneratingArray, setTypeOfGeneratingArray] = useState<string>('random');
 
     const typeOfSort: string[] = ['bubble', 'counting', 'insert', 'quick', 'heap', 'merge'];
+    
+    const typeOfGeneratingArrays: string[] = ['random', 'sorted', 'reversed', 'almost sorted', 'always same'];
 
     const addShip = () => {
         if (shipToAdd <= 0) {
@@ -117,7 +120,7 @@ export default function Home() {
             <div className="my-5 center-conten">
                 <h3 className="text-lg font-semibold">Додати певну кількість кораблів з випадковою кількістю
                     моряків </h3>
-                <div className="flex flex-row justify-center ">
+                <div className="flex flex-row justify-center my-2 ">
                     <input
                         type="number"
                         value={shipToAddRandom}
@@ -125,8 +128,14 @@ export default function Home() {
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             setShipToAddRandom(parseInt(e.target.value))
                         }}
-                        className="border border-gray-400 rounded px-2 py-1 ml-2 mr-4 mt-2"
+                        className="border border-gray-400 rounded px-2 py-1 ml-2 mr-4 mt-2 w-24"
                     />
+                    <select value={typeOfGeneratingArray} onChange={(e) => setTypeOfGeneratingArray(e.target.value)}
+                            className="border border-gray-400 rounded px-2 py-1 mr-2">
+                        {typeOfGeneratingArrays.map((type, index) => (
+                            <option key={index} value={type}>{type}</option>
+                        ))}
+                    </select>
                     <button className="bg-blue-500 hover:bg-blue-700 text-white base-for-button" onClick={event => {
                         randomAddShips(shipToAddRandom);
                     }}>
@@ -139,9 +148,36 @@ export default function Home() {
 
     function randomAddShips(n: number) {
         const ships = new Array(n)
+        
+        let k = 1;
+        if (typeOfGeneratingArray === 'always same') 
+            k = 500
+        else 
+            k = 3000;
+        
         for (let i = 0; i < n; i++) {
             ships[i] = Math.floor(Math.random() * 1000);
         }
-        setArmada([...armada, ...ships]);
+        let arr: number[] = [...armada, ...ships];
+        
+        if (typeOfGeneratingArray === 'sorted') { 
+            arr.sort((a, b) => a - b);
+        }
+        else if (typeOfGeneratingArray === 'reversed') {
+            arr.sort((a, b) => b - a);
+        }
+        else if (typeOfGeneratingArray === 'almost sorted') {
+            arr = sortPart(arr);
+        }
+        
+        setArmada(arr);
+    }
+    
+    function sortPart(arr: number[]) {
+        const start = Math.floor(arr.length / 3);
+        const end = Math.floor(arr.length / 3 * 2);
+        const part = arr.slice(start, end);
+        const sortedPart = part.sort((a, b) => a - b);
+        return [...arr.slice(0, start), ...sortedPart, ...arr.slice(end)];
     }
 }

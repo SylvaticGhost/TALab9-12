@@ -6,9 +6,13 @@ import bubbleSort from "@/lib/sorts/simple-sorts/bubbleSort";
 import countingSort from "@/lib/sorts/simple-sorts/countingSort";
 import insertSort from "@/lib/sorts/simple-sorts/insertSort";
 import quickSort from "@/lib/sorts/quickSort";
-import smoothSort from "@/lib/sorts/smoothSort";
-import mergeSort from "@/lib/sorts/mergeSort";
+import smoothSort from "@/lib/sorts/sort-for-large/smoothSort";
+import mergeSort from "@/lib/sorts/sort-for-large/mergeSort";
+import FleetComponent from "@/components/fleetComponent";
+import radixSort from "@/lib/sorts/sort-for-long-key/radixSort";
+import bucketSort from "@/lib/sorts/sort-for-long-key/bucketSort";
 
+const views: string[] = ['ship', 'fleet'];
 
 export default function Home() {
 
@@ -16,13 +20,16 @@ export default function Home() {
     const [shipToAdd, setShipToAdd] = useState<number>(0);
     const [sortMethod, setSortMethod] = useState<string>('bubble');
     const [time, setTime] = useState<string>('-');
+    
+    const [view, setView] = useState<string>(views[0])
 
     const [shipToAddRandom, setShipToAddRandom] = useState<number>(0);
     const [typeOfGeneratingArray, setTypeOfGeneratingArray] = useState<string>('random');
 
-    const typeOfSort: string[] = ['bubble', 'counting', 'insert', 'quick', 'heap', 'merge'];
+    const typeOfSort: string[] = ['bubble', 'counting', 'insert', 'quick', 'smooth', 'merge','radix', 'bucket'];
     
     const typeOfGeneratingArrays: string[] = ['random', 'sorted', 'reversed', 'almost sorted', 'always same'];
+    
 
     const addShip = () => {
         if (shipToAdd <= 0) {
@@ -53,6 +60,12 @@ export default function Home() {
             case 'merge':
                 await sortContext(mergeSort)
                 break;
+            case 'radix':
+                await sortContext(radixSort)
+                break;
+            case 'bucket':
+                await sortContext(bucketSort)
+                break;
             default:
                 alert('Невідомий метод сортування');
                 break;
@@ -72,12 +85,30 @@ export default function Home() {
 
     return (
         <main className="flex flex-col items-center justify-between p-24">
+            <header className="header-style">
+                <div className="mt-2 mx-5 flex flex-row-reverse">
+                    <div className="flex flex-row">
+                        <p className="flex items-center mr-1">view:</p>
+                        <select value={view} onChange={(e) => setView(e.target.value)}
+                                className="border border-gray-400 rounded px-2 py-1">
+                            {views.map((view, index) => (
+                                <option key={index} value={view}>{view}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+            </header>
             <div className="mb-10">
-                <h3 className="font-semibold text-xl">Список кораблів</h3>
+                <h3 className="font-semibold text-xl">Список {view === 'ship' ? 'Кораблів' : 'Флотів'}</h3>
                 <div className="flex flex-row flex-wrap items-center justify-between my-2">
                     {armada.slice(0, 100).map((sailors, index) => (
                         <button>
-                            <ShipComponent key={index} sailors={sailors}/>
+                            {
+                                view === 'ship' ?
+                                    <ShipComponent sailors={sailors} key={index}/>
+                                    :
+                                    <FleetComponent sailors={sailors} key={index}/>
+                            }
                         </button>
                     ))}
                     {armada.length > 100 && <p>...</p>}
@@ -91,7 +122,7 @@ export default function Home() {
                     До початкового списку
                 </button>
                 <button className="bg-blue-500 hover:bg-blue-700 text-white base-for-button" onClick={addShip}>
-                    Додати корабель
+                    Додати {view === 'ship' ? 'Корабель' : 'Флот'}
                 </button>
                 <input
                     type="number"
@@ -118,7 +149,7 @@ export default function Home() {
                 <p className="font-semibold mr-3">Час: </p><a>{time}</a>
             </div>
             <div className="my-5 center-conten">
-                <h3 className="text-lg font-semibold">Додати певну кількість кораблів з випадковою кількістю
+                <h3 className="text-lg font-semibold">Додати певну кількість {view === 'ship' ? 'Кораблів' : 'Флотів'} з випадковою кількістю
                     моряків </h3>
                 <div className="flex flex-row justify-center my-2 ">
                     <input
@@ -139,7 +170,7 @@ export default function Home() {
                     <button className="bg-blue-500 hover:bg-blue-700 text-white base-for-button" onClick={event => {
                         randomAddShips(shipToAddRandom);
                     }}>
-                        Додати кораблі
+                        Додати {view === 'ship' ? 'Кораблі' : 'Флоти'}
                     </button>
                 </div>
             </div>
@@ -149,14 +180,17 @@ export default function Home() {
     function randomAddShips(n: number) {
         const ships = new Array(n)
         
-        let k = 1;
+        let k = 10;
         if (typeOfGeneratingArray === 'always same') 
-            k = 500
+            k = 50
         else 
-            k = 3000;
+            k = 300;
+        
+        if (view === 'fleet')
+            k *= 20;
         
         for (let i = 0; i < n; i++) {
-            ships[i] = Math.floor(Math.random() * 1000);
+            ships[i] = Math.floor(Math.random() * k);
         }
         let arr: number[] = [...armada, ...ships];
         

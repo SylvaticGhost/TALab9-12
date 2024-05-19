@@ -37,3 +37,14 @@
   align-items: center;
   flex-direction: column;
 }
+
+.header-style {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100; /* This ensures the header stays on top of other content */
+}
+
+.fleet-bg {
+  background-color: #ADA491;
+}

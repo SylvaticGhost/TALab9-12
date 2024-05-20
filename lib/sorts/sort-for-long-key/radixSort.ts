@@ -1,5 +1,5 @@
 ﻿export default function radixSort(arr: number[]): number[] {
-    const max = Math.max(...arr);
+    const max = arr.reduce((max, current) => Math.max(max, current), -Infinity);
     let exp = 1;
     while (Math.floor(max / exp) > 0) {
         arr = countingSort(arr, exp);

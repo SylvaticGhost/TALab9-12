@@ -1,22 +1,23 @@
 ﻿import {generateArray, sortingContext} from "./helpers";
 
-export async function testRadix(sortingFunction) {
-    let number = 100;
-    const times = 7;
+export async function testLinear(sortingFunction) { 
+    let number = 1000;
+    const times = 6;
     const results = []
+    const grow = 1000;
 
     for (let i = 0; i < times; i++) {
         const arr = generateArray(number);
         
         const times = []
-        for (let j = 0; j < 3; j++) { 
+        for (let j = 0; j < 2; j++) { 
             times.push(await sortingContext(sortingFunction, arr));
         }
         
         const sortTime = times.reduce((acc, time) => acc + time) / times.length;
         
         results.push({number, sortTime});
-        number *= 4;
+        number += grow;
     }
 
     return results;

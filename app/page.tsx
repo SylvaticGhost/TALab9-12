@@ -102,7 +102,7 @@ export default function Home() {
                 <h3 className="font-semibold text-xl">Список {view === 'ship' ? 'Кораблів' : 'Флотів'}</h3>
                 <div className="flex flex-row flex-wrap items-center justify-between my-2">
                     {armada.slice(0, 100).map((sailors, index) => (
-                        <button>
+                        <button key={index}>
                             {
                                 view === 'ship' ?
                                     <ShipComponent sailors={sailors} key={index}/>
